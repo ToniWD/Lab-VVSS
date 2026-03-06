@@ -5,6 +5,7 @@ import drinkshop.export.CsvExporter;
 import drinkshop.receipt.ReceiptGenerator;
 import drinkshop.reports.DailyReportService;
 import drinkshop.service.*;
+import drinkshop.service.validator.ValidationException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -142,18 +143,26 @@ public class DrinkShopController {
                 Double.parseDouble(txtProdPrice.getText()),
                 comboProdCategorie.getValue(),
                 comboProdTip.getValue());
-        productService.addProduct(p);
-        initData();
+        try {
+            productService.addProduct(p);
+            initData();
+        } catch (ValidationException e) {
+            showError(e.getMessage());
+        }
     }
 
     @FXML
     private void onUpdateProduct() {
         Product selected = productTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
-        productService.updateProduct(selected.getId(), txtProdName.getText(),
-                Double.parseDouble(txtProdPrice.getText()),
-                comboProdCategorie.getValue(), comboProdTip.getValue());
-        initData();
+        try {
+            productService.updateProduct(selected.getId(), txtProdName.getText(),
+                    Double.parseDouble(txtProdPrice.getText()),
+                    comboProdCategorie.getValue(), comboProdTip.getValue());
+            initData();
+        } catch (ValidationException e) {
+            showError(e.getMessage());
+        }
     }
 
     @FXML
@@ -190,9 +199,13 @@ public class DrinkShopController {
     @FXML
     private void onAddNewReteta() {
         Recipe r = new Recipe(recipeService.getAll().size()+1, new ArrayList<>(newRetetaList));
-        recipeService.addRecipe(r);
-        newRetetaList.clear();
-        initData();
+        try {
+            recipeService.addRecipe(r);
+            newRetetaList.clear();
+            initData();
+        } catch (ValidationException e) {
+            showError(e.getMessage());
+        }
     }
 
     @FXML
@@ -236,12 +249,16 @@ public class DrinkShopController {
         currentOrder.getItems().addAll(currentOrderItems);
         currentOrder.computeTotalPrice();
 
-        orderService.addOrder(currentOrder);
-        txtReceipt.setText(ReceiptGenerator.generate(currentOrder, productService.getAllProducts()));
+        try {
+            orderService.addOrder(currentOrder);
+            txtReceipt.setText(ReceiptGenerator.generate(currentOrder, productService.getAllProducts()));
 
-        currentOrderItems.clear();
-        currentOrder = new Order(currentOrder.getId() + 1);
-        updateOrderTotal();
+            currentOrderItems.clear();
+            currentOrder = new Order(currentOrder.getId() + 1);
+            updateOrderTotal();
+        } catch (ValidationException e) {
+            showError(e.getMessage());
+        }
     }
 
     private void updateOrderTotal() {
