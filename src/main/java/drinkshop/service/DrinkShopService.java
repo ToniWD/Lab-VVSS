@@ -5,6 +5,7 @@ import drinkshop.export.CsvExporter;
 import drinkshop.receipt.ReceiptGenerator;
 import drinkshop.reports.DailyReportService;
 import drinkshop.repository.Repository;
+import drinkshop.service.validator.*;
 
 import java.util.List;
 
@@ -12,20 +13,20 @@ public class DrinkShopService {
 
     private final ProductService productService;
     private final OrderService orderService;
-    private final RetetaService retetaService;
-    private final StocService stocService;
+    private final RecipeService recipeService;
+    private final StockService stockService;
     private final DailyReportService report;
 
     public DrinkShopService(
             Repository<Integer, Product> productRepo,
             Repository<Integer, Order> orderRepo,
-            Repository<Integer, Reteta> retetaRepo,
-            Repository<Integer, Stoc> stocService
+            Repository<Integer, Recipe> recipeRepo,
+            Repository<Integer, Stock> stockService
     ) {
-        this.productService = new ProductService(productRepo);
-        this.orderService = new OrderService(orderRepo, productRepo);
-        this.retetaService = new RetetaService(retetaRepo);
-        this.stocService = new StocService(stocService);
+        this.productService = new ProductService(productRepo, new ProductValidator());
+        this.orderService = new OrderService(orderRepo, productRepo, new OrderValidator(), new OrderItemValidator());
+        this.recipeService = new RecipeService(recipeRepo, new RecipeValidator());
+        this.stockService = new StockService(stockService, new StockValidator());
         this.report = new DailyReportService(orderRepo);
     }
 
@@ -34,7 +35,7 @@ public class DrinkShopService {
         productService.addProduct(p);
     }
 
-    public void updateProduct(int id, String name, double price, CategorieBautura categorie, TipBautura tip) {
+    public void updateProduct(int id, String name, double price, DrinkCategory categorie, DrinkBase tip) {
         productService.updateProduct(id, name, price, categorie, tip);
     }
 
@@ -46,11 +47,11 @@ public class DrinkShopService {
         return productService.getAllProducts();
     }
 
-    public List<Product> filtreazaDupaCategorie(CategorieBautura categorie) {
-        return productService.filterByCategorie(categorie);
+    public List<Product> filtreazaDupaCategorie(DrinkCategory categorie) {
+        return productService.filterByCategory(categorie);
     }
 
-    public List<Product> filtreazaDupaTip(TipBautura tip) {
+    public List<Product> filtreazaDupaTip(DrinkBase tip) {
         return productService.filterByTip(tip);
     }
 
@@ -81,27 +82,27 @@ public class DrinkShopService {
 
     // ---------- STOCK + RECIPE ----------
     public void comandaProdus(Product produs) {
-        Reteta reteta = retetaService.findById(produs.getId());
+        Recipe recipe = recipeService.findById(produs.getId());
 
-        if (!stocService.areSuficient(reteta)) {
-            throw new IllegalStateException("Stoc insuficient pentru produsul: " + produs.getNume());
+        if (!stockService.areSuficient(recipe)) {
+            throw new IllegalStateException("Stoc insuficient pentru produsul: " + produs.getName());
         }
-        stocService.consuma(reteta);
+        stockService.consume(recipe);
     }
 
-    public List<Reteta> getAllRetete() {
-        return retetaService.getAll();
+    public List<Recipe> getAllRetete() {
+        return recipeService.getAll();
     }
 
-    public void addReteta(Reteta r) {
-        retetaService.addReteta(r);
+    public void addReteta(Recipe r) {
+        recipeService.addRecipe(r);
     }
 
-    public void updateReteta(Reteta r) {
-        retetaService.updateReteta(r);
+    public void updateReteta(Recipe r) {
+        recipeService.updateRecipe(r);
     }
 
     public void deleteReteta(int id) {
-        retetaService.deleteReteta(id);
+        recipeService.deleteRecipe(id);
     }
 }

@@ -37,6 +37,6 @@ public class OrderItem implements Serializable {
     }
 
     public double getTotal() {
-        return product.getPret() * quantity;
+        return product.getPrice() * quantity;
     }
 }

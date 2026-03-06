@@ -1,6 +1,6 @@
 package drinkshop.domain;
 
-public enum CategorieBautura {
+public enum DrinkCategory {
     CLASSIC_COFFEE,
     MILK_COFFEE,
     SPECIAL_COFFEE,

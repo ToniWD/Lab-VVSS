@@ -1,6 +1,6 @@
 package drinkshop.domain;
 
-public enum TipBautura {
+public enum DrinkBase {
     BASIC,
     DAIRY,
     LACTOSE_FREE,

@@ -4,15 +4,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ProductTest {
 
     Product product;
 
     @BeforeEach
     void setUp() {
-        product =new Product(100, "Limonada", 10.0, CategorieBautura.JUICE, TipBautura.WATER_BASED);
+        product =new Product(100, "Limonada", 10.0, DrinkCategory.JUICE, DrinkBase.WATER_BASED);
     }
 
     @AfterEach
@@ -27,46 +25,46 @@ class ProductTest {
 
     @Test
     void getNume() {
-        assert "Limonada".equals(product.getNume());
+        assert "Limonada".equals(product.getName());
     }
 
     @Test
     void getPret() {
-        assert 10.0 == product.getPret();
+        assert 10.0 == product.getPrice();
     }
 
     @Test
     void getCategorie() {
-        assert CategorieBautura.JUICE.equals(product.getCategorie());
+        assert DrinkCategory.JUICE.equals(product.getCategory());
     }
 
     @Test
     void setCategorie() {
-        product.setCategorie(CategorieBautura.SMOOTHIE);
-        assert CategorieBautura.SMOOTHIE.equals(product.getCategorie());
+        product.setCategory(DrinkCategory.SMOOTHIE);
+        assert DrinkCategory.SMOOTHIE.equals(product.getCategory());
     }
 
     @Test
     void getTip() {
-        assert TipBautura.WATER_BASED.equals(product.getTip());
+        assert DrinkBase.WATER_BASED.equals(product.getDrinkBase());
     }
 
     @Test
     void setTip() {
-        product.setTip(TipBautura.BASIC);
-        assert TipBautura.BASIC.equals(product.getTip());
+        product.setDrinkBase(DrinkBase.BASIC);
+        assert DrinkBase.BASIC.equals(product.getDrinkBase());
     }
 
     @Test
     void setNume() {
-        product.setNume("newLimonada");
-        assert "newLimonada".equals(product.getNume());
+        product.setName("newLimonada");
+        assert "newLimonada".equals(product.getName());
     }
 
     @Test
     void setPret() {
-        product.setPret(10.05);
-        assert 10.05 == product.getPret();
+        product.setPrice(10.05);
+        assert 10.05 == product.getPrice();
     }
 
     @Test

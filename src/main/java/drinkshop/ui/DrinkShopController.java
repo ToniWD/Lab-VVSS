@@ -21,20 +21,20 @@ public class DrinkShopController {
     @FXML private TableColumn<Product, Integer> colProdId;
     @FXML private TableColumn<Product, String> colProdName;
     @FXML private TableColumn<Product, Double> colProdPrice;
-    @FXML private TableColumn<Product, CategorieBautura> colProdCategorie;
-    @FXML private TableColumn<Product, TipBautura> colProdTip;
+    @FXML private TableColumn<Product, DrinkCategory> colProdCategorie;
+    @FXML private TableColumn<Product, DrinkBase> colProdTip;
     @FXML private TextField txtProdName, txtProdPrice;
-    @FXML private ComboBox<CategorieBautura> comboProdCategorie;
-    @FXML private ComboBox<TipBautura> comboProdTip;
+    @FXML private ComboBox<DrinkCategory> comboProdCategorie;
+    @FXML private ComboBox<DrinkBase> comboProdTip;
 
     // ---------- RETETE ----------
-    @FXML private TableView<Reteta> retetaTable;
-    @FXML private TableColumn<Reteta, Integer> colRetetaId;
-    @FXML private TableColumn<Reteta, String> colRetetaDesc;
+    @FXML private TableView<Recipe> retetaTable;
+    @FXML private TableColumn<Recipe, Integer> colRetetaId;
+    @FXML private TableColumn<Recipe, String> colRetetaDesc;
 
-    @FXML private TableView<IngredientReteta> newRetetaTable;
-    @FXML private TableColumn<IngredientReteta, String> colNewIngredName;
-    @FXML private TableColumn<IngredientReteta, Double> colNewIngredCant;
+    @FXML private TableView<RecipeIngredient> newRetetaTable;
+    @FXML private TableColumn<RecipeIngredient, String> colNewIngredName;
+    @FXML private TableColumn<RecipeIngredient, Double> colNewIngredCant;
     @FXML private TextField txtNewIngredName, txtNewIngredCant;
 
     // ---------- ORDER (CURRENT) ----------
@@ -49,8 +49,8 @@ public class DrinkShopController {
     @FXML private Label lblTotalRevenue;
 
     private ObservableList<Product> productList = FXCollections.observableArrayList();
-    private ObservableList<Reteta> retetaList = FXCollections.observableArrayList();
-    private ObservableList<IngredientReteta> newRetetaList = FXCollections.observableArrayList();
+    private ObservableList<Recipe> recipeList = FXCollections.observableArrayList();
+    private ObservableList<RecipeIngredient> newRetetaList = FXCollections.observableArrayList();
     private ObservableList<OrderItem> currentOrderItems = FXCollections.observableArrayList();
 
     private Order currentOrder = new Order(1);
@@ -65,35 +65,35 @@ public class DrinkShopController {
 
         // PRODUCTS
         colProdId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colProdName.setCellValueFactory(new PropertyValueFactory<>("nume"));
-        colProdPrice.setCellValueFactory(new PropertyValueFactory<>("pret"));
-        colProdCategorie.setCellValueFactory(new PropertyValueFactory<>("categorie"));
-        colProdTip.setCellValueFactory(new PropertyValueFactory<>("tip"));
+        colProdName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colProdPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        colProdCategorie.setCellValueFactory(new PropertyValueFactory<>("category"));
+        colProdTip.setCellValueFactory(new PropertyValueFactory<>("drinkBase"));
         productTable.setItems(productList);
 
-        comboProdCategorie.getItems().setAll(CategorieBautura.values());
-        comboProdTip.getItems().setAll(TipBautura.values());
+        comboProdCategorie.getItems().setAll(DrinkCategory.values());
+        comboProdTip.getItems().setAll(DrinkBase.values());
 
         // RETETE
         colRetetaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colRetetaDesc.setCellValueFactory(data -> {
-            Reteta r = data.getValue();
-            String desc = r.getIngrediente().stream()
-                    .map(i -> i.getDenumire() + " (" + i.getCantitate() + ")")
+            Recipe r = data.getValue();
+            String desc = r.getIngredients().stream()
+                    .map(i -> i.getName() + " (" + i.getQuantity() + ")")
                     .collect(Collectors.joining(", "));
             return new SimpleStringProperty(desc);
         });
-        retetaTable.setItems(retetaList);
+        retetaTable.setItems(recipeList);
 
-        colNewIngredName.setCellValueFactory(new PropertyValueFactory<>("denumire"));
-        colNewIngredCant.setCellValueFactory(new PropertyValueFactory<>("cantitate"));
+        colNewIngredName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colNewIngredCant.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         newRetetaTable.setItems(newRetetaList);
 
         // CURRENT ORDER TABLE
         colOrderProdName.setCellValueFactory(data -> {
             int prodId = data.getValue().getProduct().getId();
             Product p = productList.stream().filter(pr -> pr.getId() == prodId).findFirst().orElse(null);
-            return new SimpleStringProperty(p != null ? p.getNume() : "N/A");
+            return new SimpleStringProperty(p != null ? p.getName() : "N/A");
         });
         colOrderQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         currentOrderTable.setItems(currentOrderItems);
@@ -103,7 +103,7 @@ public class DrinkShopController {
 
     private void initData() {
         productList.setAll(service.getAllProducts());
-        retetaList.setAll(service.getAllRetete());
+        recipeList.setAll(service.getAllRetete());
         lblTotalRevenue.setText("Daily Revenue: " + service.getDailyRevenue());
         updateOrderTotal();
     }
@@ -111,7 +111,7 @@ public class DrinkShopController {
     // ---------- PRODUCT ----------
     @FXML
     private void onAddProduct() {
-        Reteta r=retetaTable.getSelectionModel().getSelectedItem();
+        Recipe r=retetaTable.getSelectionModel().getSelectedItem();
 
         if (r == null) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -167,19 +167,19 @@ public class DrinkShopController {
     // ---------- RETETA NOUA ----------
     @FXML
     private void onAddNewIngred() {
-        newRetetaList.add(new IngredientReteta(txtNewIngredName.getText(),
+        newRetetaList.add(new RecipeIngredient(txtNewIngredName.getText(),
                 Double.parseDouble(txtNewIngredCant.getText())));
     }
 
     @FXML
     private void onDeleteNewIngred() {
-        IngredientReteta sel = newRetetaTable.getSelectionModel().getSelectedItem();
+        RecipeIngredient sel = newRetetaTable.getSelectionModel().getSelectedItem();
         if (sel != null) newRetetaList.remove(sel);
     }
 
     @FXML
     private void onAddNewReteta() {
-        Reteta r = new Reteta(service.getAllRetete().size()+1, new ArrayList<>(newRetetaList));
+        Recipe r = new Recipe(service.getAllRetete().size()+1, new ArrayList<>(newRetetaList));
         service.addReteta(r);
         newRetetaList.clear();
         initData();
@@ -237,7 +237,7 @@ public class DrinkShopController {
     private void updateOrderTotal() {
         currentOrder.getItems().clear();
         currentOrder.getItems().addAll(currentOrderItems);
-        double total = service.computeTotal(currentOrder);
+        double total = currentOrder.getItems().isEmpty()? 0 : service.computeTotal(currentOrder);
         lblOrderTotal.setText("Total: " + total);
     }
 

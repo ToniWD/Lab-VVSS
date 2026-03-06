@@ -3,40 +3,40 @@ package drinkshop.domain;
 public class Product {
 
     private int id;
-    private String nume;
-    private double pret;
-    private CategorieBautura categorie;
-    private TipBautura tip;
+    private String name;
+    private double price;
+    private DrinkCategory category;
+    private DrinkBase drinkBase;
 
-    public Product(int id, String nume, double pret,
-                  CategorieBautura categorie,
-                  TipBautura tip) {
+    public Product(int id, String name, double price,
+                   DrinkCategory category,
+                   DrinkBase drinkBase) {
         this.id = id;
-        this.nume = nume;
-        this.pret = pret;
-        this.categorie = categorie;
-        this.tip = tip;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.drinkBase = drinkBase;
     }
 
     public int getId() { return id; }
-    public String getNume() { return nume; }
-    public double getPret() { return pret; }
-    public CategorieBautura getCategorie() { return categorie; }
+    public String getName() { return name; }
+    public double getPrice() { return price; }
+    public DrinkCategory getCategory() { return category; }
 
-    public void setCategorie(CategorieBautura categorie) {
-        this.categorie = categorie;
+    public void setCategory(DrinkCategory category) {
+        this.category = category;
     }
 
-    public TipBautura getTip() { return tip; }
+    public DrinkBase getDrinkBase() { return drinkBase; }
 
-    public void setTip(TipBautura tip) {
-        this.tip = tip;
+    public void setDrinkBase(DrinkBase drinkBase) {
+        this.drinkBase = drinkBase;
     }
-    public void setNume(String nume) { this.nume = nume; }
-    public void setPret(double pret) { this.pret = pret; }
+    public void setName(String name) { this.name = name; }
+    public void setPrice(double price) { this.price = price; }
 
     @Override
     public String toString() {
-        return nume + " (" + categorie + ", " + tip + ") - " + pret + " lei";
+        return name + " (" + category + ", " + drinkBase + ") - " + price + " lei";
     }
 }

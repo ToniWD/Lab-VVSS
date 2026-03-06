@@ -1,8 +1,8 @@
 package drinkshop.repository.file;
 
 import drinkshop.domain.Product;
-import drinkshop.domain.CategorieBautura;
-import drinkshop.domain.TipBautura;
+import drinkshop.domain.DrinkCategory;
+import drinkshop.domain.DrinkBase;
 
 public class FileProductRepository
         extends FileAbstractRepository<Integer, Product> {
@@ -25,18 +25,18 @@ public class FileProductRepository
         int id = Integer.parseInt(elems[0]);
         String name = elems[1];
         double price = Double.parseDouble(elems[2]);
-        CategorieBautura categorie = CategorieBautura.valueOf(elems[3]);
-        TipBautura tip = TipBautura.valueOf(elems[4]);
+        DrinkCategory category = DrinkCategory.valueOf(elems[3]);
+        DrinkBase tip = DrinkBase.valueOf(elems[4]);
 
-        return new Product(id, name, price, categorie, tip);
+        return new Product(id, name, price, category, tip);
     }
 
     @Override
     protected String createEntityAsString(Product entity) {
         return entity.getId() + "," +
-                entity.getNume() + "," +
-                entity.getPret() + "," +
-                entity.getCategorie() + "," +
-                entity.getTip();
+                entity.getName() + "," +
+                entity.getPrice() + "," +
+                entity.getCategory() + "," +
+                entity.getDrinkBase();
     }
 }

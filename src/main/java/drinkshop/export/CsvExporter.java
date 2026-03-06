@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 public class CsvExporter {
@@ -19,7 +18,7 @@ public class CsvExporter {
             for (Order o : orders){
                 for (OrderItem i : o.getItems()) {
                     Product p = products.stream().filter((p1)->i.getProduct().getId()==p1.getId()).toList().get(0);
-                    w.write(o.getId() + "," + p.getNume() + "," + i.getQuantity() + "," + i.getTotal() + "\n");
+                    w.write(o.getId() + "," + p.getName() + "," + i.getQuantity() + "," + i.getTotal() + "\n");
                 }
                 w.write("total order: "+o.getTotal()+" RON\n");
                 w.write("-------------------------------\n");

@@ -1,0 +1,41 @@
+package drinkshop.domain;
+
+import java.util.List;
+
+public class Recipe {
+
+    private int id;
+    private List<RecipeIngredient> ingredients;
+
+    public Recipe(int id, List<RecipeIngredient> ingredients) {
+        this.id = id;
+        this.ingredients = ingredients;
+
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+
+    public List<RecipeIngredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<RecipeIngredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    @Override
+    public String toString() {
+        return "Recipe{" +
+                "productId=" + id +
+                ", ingredients=" + ingredients +
+                '}';
+    }
+}
+
