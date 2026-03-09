@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class DrinkShopController {
@@ -129,8 +130,14 @@ public class DrinkShopController {
         productList.setAll(productService.getAllProducts());
         recipeList.setAll(recipeService.getAll());
         stockList.setAll(stockService.getAll());
-        lblTotalRevenue.setText("Daily Revenue: " + report.getTotalRevenue());
+        lblTotalRevenue.setText("Daily Revenue: " + report.getTotalRevenueToday());
         updateOrderTotal();
+
+        AtomicInteger orderMaxId = new AtomicInteger(1);
+        orderService.getAllOrders().forEach(order -> {if(orderMaxId.get() < order.getId())
+            orderMaxId.set(order.getId());});
+
+        currentOrder = new Order(orderMaxId.get() + 1);
     }
 
     // ---------- PRODUCT ----------
@@ -306,7 +313,7 @@ public class DrinkShopController {
 
     @FXML
     private void onDailyRevenue() {
-        lblTotalRevenue.setText("Daily Revenue: " + report.getTotalRevenue());
+        lblTotalRevenue.setText("Daily Revenue: " + report.getTotalRevenueToday());
     }
 
     private void showError(String msg) {

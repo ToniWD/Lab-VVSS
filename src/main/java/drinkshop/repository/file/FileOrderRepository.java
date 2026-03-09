@@ -5,6 +5,9 @@ import drinkshop.domain.OrderItem;
 import drinkshop.domain.Product;
 import drinkshop.repository.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +30,7 @@ public class FileOrderRepository
     @Override
     protected Order extractEntity(String line) {
 
-        // Format: id,productId:qty|productId:qty,total
+        // Format: id,productId:qty|productId:qty,total,yyyy-MM-ddTHH:mm:ss
         String[] parts = line.split(",");
 
         int id = Integer.parseInt(parts[0]);
@@ -46,7 +49,14 @@ public class FileOrderRepository
 
         double totalPrice = Double.parseDouble(parts[2]);
 
-        return new Order(id, items, totalPrice);
+        LocalDateTime orderDateTime;
+        if (parts.length > 3 && !parts[3].isEmpty()) {
+            orderDateTime = LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else {
+            orderDateTime = LocalDate.now().minusDays(1).atStartOfDay();
+        }
+
+        return new Order(id, items, totalPrice, orderDateTime);
     }
 
     @Override
@@ -56,7 +66,7 @@ public class FileOrderRepository
 
         for (OrderItem item : entity.getItems()) {
 
-            if (sb.isEmpty()) {
+            if (!sb.isEmpty()) {
                 sb.append("|");
             }
 
@@ -65,8 +75,13 @@ public class FileOrderRepository
                     .append(item.getQuantity());
         }
 
+        String dateTime = entity.getOrderDateTime() != null 
+            ? entity.getOrderDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            : LocalDate.now().minusDays(1).atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
         return entity.getId() + "," +
                 sb + "," +
-                entity.getTotalPrice();
+                entity.getTotalPrice() + "," +
+                dateTime;
     }
 }

@@ -6,6 +6,7 @@ import drinkshop.domain.Product;
 import drinkshop.repository.Repository;
 import drinkshop.service.validator.Validator;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderService {
@@ -27,6 +28,7 @@ public class OrderService {
 
     public void addOrder(Order o) {
         orderValidator.validate(o);
+        o.setOrderDateTime(LocalDateTime.now());
         orderRepo.save(o);
     }
 
