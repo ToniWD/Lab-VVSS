@@ -55,6 +55,14 @@ public class DrinkShopController {
 
     @FXML private Label lblTotalRevenue;
 
+
+    // ---------- STOCK ----------
+    @FXML private TableView<Stock> stockTable;
+    @FXML private TableColumn<Stock, String> colStockIngred;
+    @FXML private TableColumn<Stock, Double> colStockQty;
+
+    private ObservableList<Stock> stockList = FXCollections.observableArrayList();
+
     private ObservableList<Product> productList = FXCollections.observableArrayList();
     private ObservableList<Recipe> recipeList = FXCollections.observableArrayList();
     private ObservableList<RecipeIngredient> newRetetaList = FXCollections.observableArrayList();
@@ -73,6 +81,11 @@ public class DrinkShopController {
 
     @FXML
     private void initialize() {
+
+        // STOCK
+        colStockIngred.setCellValueFactory(new PropertyValueFactory<>("ingredient"));
+        colStockQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        stockTable.setItems(stockList);
 
         // PRODUCTS
         colProdId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -115,6 +128,7 @@ public class DrinkShopController {
     private void initData() {
         productList.setAll(productService.getAllProducts());
         recipeList.setAll(recipeService.getAll());
+        stockList.setAll(stockService.getAll());
         lblTotalRevenue.setText("Daily Revenue: " + report.getTotalRevenue());
         updateOrderTotal();
     }
@@ -250,14 +264,30 @@ public class DrinkShopController {
         currentOrder.computeTotalPrice();
 
         try {
+            for (OrderItem item : currentOrderItems) {
+                Recipe recipe = recipeService.getAll().stream()
+                        .filter(r -> r.getId() == item.getProduct().getId())
+                        .findFirst()
+                        .orElse(null);
+
+                if (recipe != null) {
+                    stockService.consume(recipe);
+                }
+            }
+
             orderService.addOrder(currentOrder);
             txtReceipt.setText(ReceiptGenerator.generate(currentOrder, productService.getAllProducts()));
 
             currentOrderItems.clear();
             currentOrder = new Order(currentOrder.getId() + 1);
             updateOrderTotal();
+
+            stockList.setAll(stockService.getAll());
+
         } catch (ValidationException e) {
             showError(e.getMessage());
+        } catch (IllegalStateException e) {
+            showError("Stoc insuficient pentru comanda.");
         }
     }
 
