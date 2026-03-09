@@ -1,0 +1,352 @@
+@startuml
+class drinkshop.service.validator.StockValidator {
++ void validate(Stock)
+}
+
+class drinkshop.service.OrderService {
+- Repository<Integer,Order> orderRepo
+- Repository<Integer,Product> productRepo
+- Validator<Order> orderValidator
+- Validator<OrderItem> orderItemValidator
++ void addOrder(Order)
++ void updateOrder(Order)
++ void deleteOrder(int)
++ List<Order> getAllOrders()
++ Order findById(int)
++ double computeTotal(Order)
++ void addItem(Order,OrderItem)
++ void removeItem(Order,OrderItem)
+}
+
+
+class drinkshop.domain.Product {
+- int id
+- String name
+- double price
+- DrinkCategory category
+- DrinkBase drinkBase
++ int getId()
++ String getName()
++ double getPrice()
++ DrinkCategory getCategory()
++ void setCategory(DrinkCategory)
++ DrinkBase getDrinkBase()
++ void setDrinkBase(DrinkBase)
++ void setName(String)
++ void setPrice(double)
++ String toString()
+}
+
+
+enum drinkshop.domain.DrinkBase {
++  BASIC
++  DAIRY
++  LACTOSE_FREE
++  WATER_BASED
++  PLANT_BASED
++  POWDER
++  ALL
+}
+
+class drinkshop.reports.DailyReportService {
+- Repository<Integer,Order> repo
++ double getTotalRevenue()
++ int getTotalOrders()
++ double getTotalRevenueForDate(LocalDate)
++ int getTotalOrdersForDate(LocalDate)
++ double getTotalRevenueToday()
++ int getTotalOrdersToday()
+}
+
+
+class drinkshop.service.validator.ValidationException {
+}
+interface drinkshop.service.validator.Validator {
+~ void validate(T)
+}
+
+abstract class drinkshop.repository.AbstractRepository {
+# Map<ID,E> entities
++ E findOne(ID)
++ List<E> findAll()
++ E save(E)
++ E delete(ID)
++ E update(E)
+# {abstract}ID getId(E)
+}
+
+
+class drinkshop.domain.Stock {
+- int id
+- String ingredient
+- double quantity
+- double minimumStock
++ int getId()
++ String getIngredient()
++ double getQuantity()
++ double getMinimumStock()
++ void setIngredient(String)
++ void setQuantity(double)
++ void setMinimumStock(int)
++ boolean isSubMinim()
++ String toString()
+}
+
+
+class drinkshop.domain.Recipe {
+- int id
+- List<RecipeIngredient> ingredients
++ void setId(int)
++ int getId()
++ List<RecipeIngredient> getIngredients()
++ void setIngredients(List<RecipeIngredient>)
++ String toString()
+}
+
+
+class drinkshop.service.RecipeService {
+- Repository<Integer,Recipe> recipeRepo
+- Validator<Recipe> recipeValidator
++ void addRecipe(Recipe)
++ void updateRecipe(Recipe)
++ void deleteRecipe(int)
++ Recipe findById(int)
++ List<Recipe> getAll()
+}
+
+
+class drinkshop.service.validator.ProductValidator {
++ void validate(Product)
+}
+
+class drinkshop.service.ProductService {
+- Repository<Integer,Product> productRepo
+- Validator<Product> productValidator
++ void addProduct(Product)
++ void updateProduct(int,String,double,DrinkCategory,DrinkBase)
++ void deleteProduct(int)
++ List<Product> getAllProducts()
++ Product findById(int)
++ List<Product> filterByCategory(DrinkCategory)
++ List<Product> filterByTip(DrinkBase)
+}
+
+
+class drinkshop.domain.Order {
+- int id
+- List<OrderItem> items
+- double totalPrice
+- LocalDateTime orderDateTime
++ int getId()
++ List<OrderItem> getItems()
++ double getTotalPrice()
++ void setItems(List<OrderItem>)
++ void setTotalPrice(double)
++ LocalDateTime getOrderDateTime()
++ void setOrderDateTime(LocalDateTime)
++ void addItem(OrderItem)
++ void removeItem(OrderItem)
++ String toString()
++ double getTotal()
++ void computeTotalPrice()
+}
+
+
+class drinkshop.receipt.ReceiptGenerator {
++ {static} String generate(Order,List<Product>)
+}
+
+class drinkshop.ui.DrinkShopController {
+- ProductService productService
+- OrderService orderService
+- RecipeService recipeService
+- StockService stockService
+- DailyReportService report
+- TableView<Product> productTable
+- TableColumn<Product,Integer> colProdId
+- TableColumn<Product,String> colProdName
+- TableColumn<Product,Double> colProdPrice
+- TableColumn<Product,DrinkCategory> colProdCategorie
+- TableColumn<Product,DrinkBase> colProdTip
+- TextField txtProdName
+- ComboBox<DrinkCategory> comboProdCategorie
+- ComboBox<DrinkBase> comboProdTip
+- TableView<Recipe> retetaTable
+- TableColumn<Recipe,Integer> colRetetaId
+- TableColumn<Recipe,String> colRetetaDesc
+- TableView<RecipeIngredient> newRetetaTable
+- TableColumn<RecipeIngredient,String> colNewIngredName
+- TableColumn<RecipeIngredient,Double> colNewIngredCant
+- TextField txtNewIngredName
+- TableView<OrderItem> currentOrderTable
+- TableColumn<OrderItem,String> colOrderProdName
+- TableColumn<OrderItem,Integer> colOrderQty
+- ComboBox<Integer> comboQty
+- Label lblOrderTotal
+- TextArea txtReceipt
+- Label lblTotalRevenue
+- TableView<Stock> stockTable
+- TableColumn<Stock,String> colStockIngred
+- TableColumn<Stock,Double> colStockQty
+- ObservableList<Stock> stockList
+- ObservableList<Product> productList
+- ObservableList<Recipe> recipeList
+- ObservableList<RecipeIngredient> newRetetaList
+- ObservableList<OrderItem> currentOrderItems
+- Order currentOrder
++ void setServices(ProductService,OrderService,RecipeService,StockService,DailyReportService)
+- void initialize()
+- void initData()
+- void onAddProduct()
+- void onUpdateProduct()
+- void onDeleteProduct()
+- void onFilterCategorie()
+- void onFilterTip()
+- void onAddNewIngred()
+- void onDeleteNewIngred()
+- void onAddNewReteta()
+- void onClearNewRetetaIngredients()
+- void onAddOrderItem()
+- void onDeleteOrderItem()
+- void onFinalizeOrder()
+- void updateOrderTotal()
+- void onExportOrdersCsv()
+- void onDailyRevenue()
+- void showError(String)
+}
+
+
+class drinkshop.service.validator.OrderValidator {
+- OrderItemValidator itemValidator
++ void validate(Order)
+}
+
+
+class drinkshop.ui.DrinkShopApp {
++ void start(Stage)
++ {static} void main(String[])
+}
+
+class drinkshop.repository.file.FileOrderRepository {
+- Repository<Integer,Product> productRepository
+# Integer getId(Order)
+# Order extractEntity(String)
+# String createEntityAsString(Order)
+}
+
+
+class drinkshop.domain.OrderItem {
+- Product product
+- int quantity
++ Product getProduct()
++ void setProduct(Product)
++ int getQuantity()
++ void setQuantity(int)
++ String toString()
++ double getTotal()
+}
+
+
+interface drinkshop.repository.Repository {
+~ E findOne(ID)
+~ List<E> findAll()
+~ E save(E)
+~ E delete(ID)
+~ E update(E)
+}
+
+class drinkshop.service.validator.RecipeValidator {
++ void validate(Recipe)
+}
+
+class drinkshop.service.StockService {
+- Repository<Integer,Stock> stockRepo
+- Validator<Stock> stockValidator
++ List<Stock> getAll()
++ void add(Stock)
++ void update(Stock)
++ void delete(int)
++ boolean areSuficient(Recipe)
++ void consume(Recipe)
+}
+
+
+class drinkshop.repository.file.FileStockRepository {
+# Integer getId(Stock)
+# Stock extractEntity(String)
+# String createEntityAsString(Stock)
+}
+
+enum drinkshop.domain.DrinkCategory {
++  CLASSIC_COFFEE
++  MILK_COFFEE
++  SPECIAL_COFFEE
++  ICED_COFFEE
++  TEA
++  BUBBLE_TEA
++  JUICE
++  SMOOTHIE
++  ALL
+}
+
+class drinkshop.export.CsvExporter {
++ {static} void exportOrders(List<Product>,List<Order>,String)
+}
+
+class drinkshop.repository.file.FileProductRepository {
+# Integer getId(Product)
+# Product extractEntity(String)
+# String createEntityAsString(Product)
+}
+
+class drinkshop.repository.file.FileRecipeRepository {
+# Integer getId(Recipe)
+# Recipe extractEntity(String)
+# String createEntityAsString(Recipe)
+}
+
+class drinkshop.domain.RecipeIngredient {
+- String name
+- double quantity
++ String getName()
++ void setName(String)
++ double getQuantity()
++ void setQuantity(double)
++ String toString()
+}
+
+
+abstract class drinkshop.repository.file.FileAbstractRepository {
+# String fileName
+# void loadFromFile()
+- void writeToFile()
++ E save(E)
++ E delete(ID)
++ E update(E)
+# {abstract}E extractEntity(String)
+# {abstract}String createEntityAsString(E)
+}
+
+
+class drinkshop.service.validator.OrderItemValidator {
++ void validate(OrderItem)
+}
+
+
+
+drinkshop.service.validator.Validator <|.. drinkshop.service.validator.StockValidator
+drinkshop.service.validator.RuntimeException <|-- drinkshop.service.validator.ValidationException
+drinkshop.repository.Repository <|.. drinkshop.repository.AbstractRepository
+drinkshop.service.validator.Validator <|.. drinkshop.service.validator.ProductValidator
+java.io.Serializable <|.. drinkshop.domain.Order
+drinkshop.service.validator.Validator <|.. drinkshop.service.validator.OrderValidator
+javafx.application.Application <|-- drinkshop.ui.DrinkShopApp
+drinkshop.repository.file.FileAbstractRepository <|-- drinkshop.repository.file.FileOrderRepository
+java.io.Serializable <|.. drinkshop.domain.OrderItem
+drinkshop.service.validator.Validator <|.. drinkshop.service.validator.RecipeValidator
+drinkshop.repository.file.FileAbstractRepository <|-- drinkshop.repository.file.FileStockRepository
+drinkshop.repository.file.FileAbstractRepository <|-- drinkshop.repository.file.FileProductRepository
+drinkshop.repository.file.FileAbstractRepository <|-- drinkshop.repository.file.FileRecipeRepository
+drinkshop.repository.AbstractRepository <|-- drinkshop.repository.file.FileAbstractRepository
+drinkshop.service.validator.Validator <|.. drinkshop.service.validator.OrderItemValidator
+@enduml
