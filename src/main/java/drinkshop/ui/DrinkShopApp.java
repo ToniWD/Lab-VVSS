@@ -13,11 +13,13 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import drinkshop.service.ProductTest;
 
 public class DrinkShopApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+       ProductTest.runTests();
 
         // ---------- Initializare Repository-uri care citesc din fisiere ----------
         Repository<Integer, Product> productRepo = new FileProductRepository("data/products.txt");

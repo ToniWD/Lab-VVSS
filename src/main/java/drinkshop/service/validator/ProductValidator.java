@@ -9,7 +9,7 @@ public class ProductValidator implements Validator<Product> {
 
         String errors = "";
 
-        if (product.getId() <= 0)
+        if (product.getId() < 0)
             errors += "ID invalid!\n";
 
         if (product.getName() == null || product.getName().isBlank())
