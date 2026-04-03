@@ -7,6 +7,8 @@ import drinkshop.service.validator.ProductValidator;
 import drinkshop.service.validator.ValidationException;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -119,4 +121,89 @@ class ProductServiceTest {
         // Act & Assert
         assertDoesNotThrow(() -> service.addProduct(p));
     }
+
+    @Test
+    @DisplayName("Filter: category null → listă goală")
+    void testFilterByCategory_Null() {
+        Product p1 = new Product(1, "A", 10, DrinkCategory.ICED_COFFEE, DrinkBase.BASIC);
+        service.addProduct(p1);
+
+        var result = service.filterByCategory(null);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty(), "Filtrare cu null ar trebui să returneze listă goală");
+    }
+
+    @Test
+    @DisplayName("Filter: category ALL → returnează toate produsele")
+    void testFilterByCategory_All() {
+        Product p1 = new Product(1, "A", 10, DrinkCategory.ICED_COFFEE, DrinkBase.BASIC);
+        Product p2 = new Product(2, "B", 15, DrinkCategory.TEA, DrinkBase.BASIC);
+        service.addProduct(p1);
+        service.addProduct(p2);
+
+        var result = service.filterByCategory(DrinkCategory.ALL);
+
+        assertEquals(2, result.size(), "Filtrare ALL ar trebui să returneze toate produsele");
+        assertTrue(result.contains(p1));
+        assertTrue(result.contains(p2));
+    }
+
+    @Test
+    @DisplayName("Filter: category COFFEE → returnează doar produsele ICED_COFFEE")
+    void testFilterByCategory_Match() {
+        Product p1 = new Product(1, "A", 10, DrinkCategory.ICED_COFFEE, DrinkBase.BASIC);
+        Product p2 = new Product(2, "B", 15, DrinkCategory.ICED_COFFEE, DrinkBase.BASIC);
+        Product p3 = new Product(3, "C", 20, DrinkCategory.TEA, DrinkBase.BASIC);
+        service.addProduct(p1);
+        service.addProduct(p2);
+        service.addProduct(p3);
+
+        var result = service.filterByCategory(DrinkCategory.ICED_COFFEE);
+
+        assertEquals(2, result.size(), "Filtrare ICED_COFFEE ar trebui să returneze 2 produse");
+        assertTrue(result.contains(p1));
+        assertTrue(result.contains(p2));
+    }
+
+    @Test
+    @DisplayName("Filter: category TEA fără match → listă goală")
+    void testFilterByCategory_NoMatch() {
+        Product p1 = new Product(1, "A", 10, DrinkCategory.ICED_COFFEE, DrinkBase.BASIC);
+        service.addProduct(p1);
+
+        var result = service.filterByCategory(DrinkCategory.TEA);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty(), "Filtrare fără match ar trebui să returneze listă goală");
+    }
+
+    @Test
+    @DisplayName("Filter: listă goală → orice categorie → listă goală")
+    void testFilterByCategory_EmptyList() {
+        var result = service.filterByCategory(DrinkCategory.ICED_COFFEE);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty(), "Filtrare pe listă goală ar trebui să returneze listă goală");
+    }
+
+    @Test
+    @DisplayName("Filter: listă cu element null → elementul null este ignorat")
+    void testFilterByCategory_NullElement_ManualList() {
+        List<Product> products = new ArrayList<>();
+        products.add(new Product(1, "A", 10, DrinkCategory.ICED_COFFEE, DrinkBase.BASIC));
+        products.add(null);
+        ProductService serviceWithCustomList = new ProductService(new InMemoryProductRepository(), new ProductValidator()) {
+            @Override
+            public List<Product> getAllProducts() {
+                return products;
+            }
+        };
+
+        var result = serviceWithCustomList.filterByCategory(DrinkCategory.ICED_COFFEE);
+
+        assertNotNull(result);
+        assertEquals(1, result.size(), "Elementul null este ignorat");
+    }
+
 }
