@@ -131,6 +131,8 @@ class ProductServiceTest {
         var result = service.filterByCategory(null);
 
         assertNotNull(result);
+        assertTrue(result.isEmpty());
+
         assertTrue(result.isEmpty(), "Filtrare cu null ar trebui să returneze listă goală");
     }
 
@@ -143,6 +145,7 @@ class ProductServiceTest {
         service.addProduct(p2);
 
         var result = service.filterByCategory(DrinkCategory.ALL);
+        assertEquals(2, result.size());
 
         assertEquals(2, result.size(), "Filtrare ALL ar trebui să returneze toate produsele");
         assertTrue(result.contains(p1));

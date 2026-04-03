@@ -68,7 +68,7 @@ public class ProductService {
         }
 
         for (Product p : products) {
-            if (p != null && p.getCategory() == category && products.size() > 0) {
+            if (p != null && p.getCategory() == category) {
                 result.add(p);
             }
         }
