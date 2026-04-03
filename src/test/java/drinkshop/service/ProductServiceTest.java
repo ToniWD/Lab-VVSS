@@ -150,7 +150,7 @@ class ProductServiceTest {
     }
 
     @Test
-    @DisplayName("Filter: category COFFEE → returnează doar produsele ICED_COFFEE")
+    @DisplayName("Filter: category ICED_COFFEE → returnează doar produsele ICED_COFFEE")
     void testFilterByCategory_Match() {
         Product p1 = new Product(1, "A", 10, DrinkCategory.ICED_COFFEE, DrinkBase.BASIC);
         Product p2 = new Product(2, "B", 15, DrinkCategory.ICED_COFFEE, DrinkBase.BASIC);
