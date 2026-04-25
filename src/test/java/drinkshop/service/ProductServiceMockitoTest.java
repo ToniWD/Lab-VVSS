@@ -1,4 +1,4 @@
-package drinkshop.ut.service;
+package drinkshop.service;
 
 import drinkshop.domain.Product;
 import drinkshop.repository.Repository;
