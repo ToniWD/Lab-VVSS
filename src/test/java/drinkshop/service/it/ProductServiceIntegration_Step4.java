@@ -7,8 +7,12 @@ import drinkshop.repository.InMemoryProductRepository;
 import drinkshop.repository.Repository;
 import drinkshop.service.ProductService;
 import drinkshop.service.validator.ProductValidator;
+import drinkshop.service.validator.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProductServiceIntegration_Step4 {
     private ProductService service;
@@ -30,5 +34,17 @@ class ProductServiceIntegration_Step4 {
 
         // Assert: Verificăm dacă produsul a ajuns în repository-ul real
         org.junit.jupiter.api.Assertions.assertEquals(p, realRepo.findOne(10));
+    }
+
+    @Test
+    void testAddProduct_FullIntegration_Invalid() {
+        Product invalidProduct = new Product(11, "Espresso", -5.0, DrinkCategory.ICED_COFFEE, DrinkBase.WATER_BASED);
+
+        assertThrows(ValidationException.class, () -> {
+            service.addProduct(invalidProduct);
+        }, "Ar trebui să arunce o excepție pentru preț negativ");
+
+        assertNull(realRepo.findOne(11),
+                "Produsul invalid nu ar fi trebuit să fie salvat în repository");
     }
 }
